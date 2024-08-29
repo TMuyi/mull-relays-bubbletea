@@ -29,6 +29,9 @@ type APIResponse struct {
 	Wireguard struct {
 		Relays []Relay `json:"relays"`
 	} `json:"wireguard"`
+	OpenVPN struct {
+		Relays []Relay `json:"relays"`
+	} `json:"openvpn"`
 }
 
 // Global style for the table
@@ -120,6 +123,7 @@ func createTable(apiResp APIResponse) table.Model {
 	// Define table columns
 	columns := []table.Column{
 		{Title: "Hostname", Width: 20},
+		{Title: "Type", Width: 15},
 		{Title: "Location", Width: 10},
 		{Title: "Active", Width: 7},
 		{Title: "IPv4 Address", Width: 15},
@@ -132,13 +136,26 @@ func createTable(apiResp APIResponse) table.Model {
 		locationInfo := apiResp.Locations[relay.Location]
 		rows = append(rows, table.Row{
 			relay.Hostname,
+			"Wireguard",
+			relay.Location,
+			fmt.Sprintf("%t", relay.Active),
+			relay.IPv4AddrIn,
+			locationInfo.Country,
+		})
+
+	}
+
+	for _, relay := range apiResp.OpenVPN.Relays {
+		locationInfo := apiResp.Locations[relay.Location]
+		rows = append(rows, table.Row{
+			relay.Hostname,
+			"OpenVPN",
 			relay.Location,
 			fmt.Sprintf("%t", relay.Active),
 			relay.IPv4AddrIn,
 			locationInfo.Country,
 		})
 	}
-
 	// Create the table with the data
 	t := table.New(
 		table.WithColumns(columns),
