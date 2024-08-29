@@ -23,3 +23,5 @@ TODOs.md
 /screenshots
 /example_react/.env
 relays.json
+*.exe
+
